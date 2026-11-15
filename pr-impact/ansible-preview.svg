@@ -1,0 +1,208 @@
+<svg width="1469pt" height="490pt"
+ viewBox="0.00 0.00 1469.00 490.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 486)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-486 1465,-486 1465,4 -4,4"/>
+<!-- file&#45;0 -->
+<g id="node1" class="node">
+<title>file&#45;0</title>
+<g id="a_node1">
+<polygon fill="#b7edcd" stroke="black" points="462,-287 0,-287 0,-251 462,-251 462,-287"/>
+<text text-anchor="middle" x="231" y="-265.3" font-family="sans-serif" font-size="14.00">changelogs/fragments/ansible&#45;controller&#45;python&#45;version&#45;check.yml</text>
+
+</g>
+</g>
+<!-- file&#45;1 -->
+<g id="node2" class="node">
+<title>file&#45;1</title>
+<g id="a_node2">
+<polygon fill="#ffe1a1" stroke="black" points="1156,-171 1001,-171 1001,-135 1156,-135 1156,-171"/>
+<text text-anchor="middle" x="1078.5" y="-149.3" font-family="sans-serif" font-size="14.00">lib/ansible/__init__.py</text>
+
+</g>
+</g>
+<!-- file&#45;12 -->
+<g id="node13" class="node">
+<title>file&#45;12</title>
+<g id="a_node13">
+<polygon fill="#dce8fa" stroke="black" points="1461,-171 1248,-171 1248,-135 1461,-135 1461,-171"/>
+<text text-anchor="middle" x="1354.5" y="-149.3" font-family="sans-serif" font-size="14.00">lib/ansible/_vendor/__init__.py</text>
+
+</g>
+</g>
+<!-- file&#45;1&#45;&gt;file&#45;12 -->
+<g id="edge1" class="edge">
+<title>file&#45;1&#45;&gt;file&#45;12</title>
+<path fill="none" stroke="black" d="M1156.19,-153C1181.5,-153 1210.24,-153 1237.8,-153"/>
+<polygon fill="black" stroke="black" points="1237.89,-156.5 1247.89,-153 1237.89,-149.5 1237.89,-156.5"/>
+<text text-anchor="middle" x="1202" y="-156.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+<!-- file&#45;2 -->
+<g id="node3" class="node">
+<title>file&#45;2</title>
+<g id="a_node3">
+<polygon fill="#ffe1a1" stroke="black" points="318.5,-341 143.5,-341 143.5,-305 318.5,-305 318.5,-341"/>
+<text text-anchor="middle" x="231" y="-319.3" font-family="sans-serif" font-size="14.00">lib/ansible/cli/__init__.py</text>
+
+</g>
+</g>
+<!-- file&#45;2&#45;&gt;file&#45;1 -->
+<g id="edge8" class="edge">
+<title>file&#45;2&#45;&gt;file&#45;1</title>
+<path fill="none" stroke="black" d="M318.74,-314.67C364.95,-314.53 420.62,-321.66 462,-350 476.11,-359.66 467.9,-371.92 480,-384 506.31,-410.26 517.91,-414.07 554,-423 707.16,-460.89 771.03,-499.53 909,-423 1004.07,-370.27 1052.54,-239.1 1069.88,-181.22"/>
+<polygon fill="black" stroke="black" points="1073.33,-181.88 1072.76,-171.3 1066.61,-179.92 1073.33,-181.88"/>
+<text text-anchor="middle" x="731.5" y="-470.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+<!-- file&#45;4 -->
+<g id="node5" class="node">
+<title>file&#45;4</title>
+<g id="a_node5">
+<polygon fill="#dce8fa" stroke="black" points="841,-414 622,-414 622,-378 841,-378 841,-414"/>
+<text text-anchor="middle" x="731.5" y="-392.3" font-family="sans-serif" font-size="14.00">lib/ansible/_internal/__init__.py</text>
+
+</g>
+</g>
+<!-- file&#45;2&#45;&gt;file&#45;4 -->
+<g id="edge9" class="edge">
+<title>file&#45;2&#45;&gt;file&#45;4</title>
+<path fill="none" stroke="black" d="M318.53,-331.36C361.75,-335.99 414.77,-342.37 462,-350 503.22,-356.66 512.91,-361.62 554,-369 572.58,-372.34 592.3,-375.61 611.58,-378.67"/>
+<polygon fill="black" stroke="black" points="611.18,-382.15 621.61,-380.25 612.27,-375.24 611.18,-382.15"/>
+<text text-anchor="middle" x="508" y="-368.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+<!-- file&#45;5 -->
+<g id="node6" class="node">
+<title>file&#45;5</title>
+<g id="a_node6">
+<polygon fill="#dce8fa" stroke="black" points="862,-360 601,-360 601,-324 862,-324 862,-360"/>
+<text text-anchor="middle" x="731.5" y="-338.3" font-family="sans-serif" font-size="14.00">lib/ansible/_internal/_secret_input.py</text>
+
+</g>
+</g>
+<!-- file&#45;2&#45;&gt;file&#45;5 -->
+<g id="edge10" class="edge">
+<title>file&#45;2&#45;&gt;file&#45;5</title>
+<path fill="none" stroke="black" d="M318.55,-326.3C393.45,-329.15 503.16,-333.34 590.54,-336.67"/>
+<polygon fill="black" stroke="black" points="590.41,-340.16 600.54,-337.05 590.68,-333.17 590.41,-340.16"/>
+<text text-anchor="middle" x="508" y="-337.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+<!-- file&#45;6 -->
+<g id="node7" class="node">
+<title>file&#45;6</title>
+<g id="a_node7">
+<polygon fill="#dce8fa" stroke="black" points="858,-306 605,-306 605,-270 858,-270 858,-306"/>
+<text text-anchor="middle" x="731.5" y="-284.3" font-family="sans-serif" font-size="14.00">lib/ansible/_internal/_ssh/__init__.py</text>
+
+</g>
+</g>
+<!-- file&#45;2&#45;&gt;file&#45;6 -->
+<g id="edge11" class="edge">
+<title>file&#45;2&#45;&gt;file&#45;6</title>
+<path fill="none" stroke="black" d="M318.55,-316.92C394.66,-311.58 506.71,-303.71 594.75,-297.53"/>
+<polygon fill="black" stroke="black" points="595.08,-301.02 604.82,-296.82 594.59,-294.03 595.08,-301.02"/>
+<text text-anchor="middle" x="508" y="-308.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+<!-- file&#45;7 -->
+<g id="node8" class="node">
+<title>file&#45;7</title>
+<g id="a_node8">
+<polygon fill="#dce8fa" stroke="black" points="882.5,-252 580.5,-252 580.5,-216 882.5,-216 882.5,-252"/>
+<text text-anchor="middle" x="731.5" y="-230.3" font-family="sans-serif" font-size="14.00">lib/ansible/_internal/_ssh/_agent_launch.py</text>
+
+</g>
+</g>
+<!-- file&#45;2&#45;&gt;file&#45;7 -->
+<g id="edge12" class="edge">
+<title>file&#45;2&#45;&gt;file&#45;7</title>
+<path fill="none" stroke="black" d="M318.6,-323.11C362.8,-320.64 416.67,-313.64 462,-296 471.2,-292.42 471.15,-287.36 480,-283 510.79,-267.85 520.52,-268.5 554,-261 565.34,-258.46 577.15,-256.08 589.04,-253.88"/>
+<polygon fill="black" stroke="black" points="589.83,-257.29 599.04,-252.07 588.58,-250.4 589.83,-257.29"/>
+<text text-anchor="middle" x="508" y="-286.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+<!-- file&#45;3 -->
+<g id="node4" class="node">
+<title>file&#45;3</title>
+<g id="a_node4">
+<polygon fill="#ffe1a1" stroke="black" points="309.5,-395 152.5,-395 152.5,-359 309.5,-359 309.5,-395"/>
+<text text-anchor="middle" x="231" y="-373.3" font-family="sans-serif" font-size="14.00">test/sanity/ignore.txt</text>
+
+</g>
+</g>
+<!-- file&#45;7&#45;&gt;file&#45;1 -->
+<g id="edge2" class="edge">
+<title>file&#45;7&#45;&gt;file&#45;1</title>
+<path fill="none" stroke="black" d="M864.95,-215.94C879.87,-213.25 894.8,-210.27 909,-207 942.56,-199.26 950.19,-194.48 983,-184 992.85,-180.85 1003.26,-177.49 1013.43,-174.17"/>
+<polygon fill="black" stroke="black" points="1014.66,-177.45 1023.08,-171.01 1012.49,-170.79 1014.66,-177.45"/>
+<text text-anchor="middle" x="955" y="-205.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+<!-- file&#45;7&#45;&gt;file&#45;2 -->
+<g id="edge3" class="edge">
+<title>file&#45;7&#45;&gt;file&#45;2</title>
+<path fill="none" stroke="black" d="M580.25,-229.75C565.3,-229.45 550.35,-229.18 536,-229 511.11,-228.68 499.75,-213.86 480,-229 455.53,-247.76 485.33,-275.84 462,-296 426.01,-327.1 374.17,-335.22 328.81,-334.96"/>
+<polygon fill="black" stroke="black" points="328.7,-331.46 318.64,-334.76 328.57,-338.46 328.7,-331.46"/>
+<text text-anchor="middle" x="508" y="-232.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+<!-- file&#45;8 -->
+<g id="node9" class="node">
+<title>file&#45;8</title>
+<g id="a_node9">
+<polygon fill="#dce8fa" stroke="black" points="834.5,-198 628.5,-198 628.5,-162 834.5,-162 834.5,-198"/>
+<text text-anchor="middle" x="731.5" y="-176.3" font-family="sans-serif" font-size="14.00">lib/ansible/_internal/_task.py</text>
+
+</g>
+</g>
+<!-- file&#45;8&#45;&gt;file&#45;1 -->
+<g id="edge4" class="edge">
+<title>file&#45;8&#45;&gt;file&#45;1</title>
+<path fill="none" stroke="black" d="M834.61,-172.01C884.22,-168.13 943.21,-163.51 990.63,-159.8"/>
+<polygon fill="black" stroke="black" points="991.17,-163.27 1000.87,-159 990.63,-156.29 991.17,-163.27"/>
+<text text-anchor="middle" x="955" y="-168.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+<!-- file&#45;9 -->
+<g id="node10" class="node">
+<title>file&#45;9</title>
+<g id="a_node10">
+<polygon fill="#dce8fa" stroke="black" points="904,-144 559,-144 559,-108 904,-108 904,-144"/>
+<text text-anchor="middle" x="731.5" y="-122.3" font-family="sans-serif" font-size="14.00">lib/ansible/_internal/_templating/_jinja_plugins.py</text>
+
+</g>
+</g>
+<!-- file&#45;9&#45;&gt;file&#45;1 -->
+<g id="edge5" class="edge">
+<title>file&#45;9&#45;&gt;file&#45;1</title>
+<path fill="none" stroke="black" d="M904.06,-135.77C930.51,-137.62 957.5,-139.7 983,-142 985.55,-142.23 988.15,-142.47 990.76,-142.73"/>
+<polygon fill="black" stroke="black" points="990.65,-146.23 1000.95,-143.75 991.34,-139.27 990.65,-146.23"/>
+<text text-anchor="middle" x="955" y="-145.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+<!-- file&#45;10 -->
+<g id="node11" class="node">
+<title>file&#45;10</title>
+<g id="a_node11">
+<polygon fill="#dce8fa" stroke="black" points="909,-90 554,-90 554,-54 909,-54 909,-90"/>
+<text text-anchor="middle" x="731.5" y="-68.3" font-family="sans-serif" font-size="14.00">lib/ansible/_internal/_templating/_template_vars.py</text>
+
+</g>
+</g>
+<!-- file&#45;10&#45;&gt;file&#45;1 -->
+<g id="edge6" class="edge">
+<title>file&#45;10&#45;&gt;file&#45;1</title>
+<path fill="none" stroke="black" d="M861.49,-90.02C877.54,-92.76 893.68,-95.77 909,-99 942.34,-106.03 950.5,-108.78 983,-119 995.07,-122.8 1007.9,-127.17 1020.08,-131.5"/>
+<polygon fill="black" stroke="black" points="1019.09,-134.86 1029.68,-134.94 1021.45,-128.27 1019.09,-134.86"/>
+<text text-anchor="middle" x="955" y="-122.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+<!-- file&#45;11 -->
+<g id="node12" class="node">
+<title>file&#45;11</title>
+<g id="a_node12">
+<polygon fill="#dce8fa" stroke="black" points="880,-36 583,-36 583,0 880,0 880,-36"/>
+<text text-anchor="middle" x="731.5" y="-14.3" font-family="sans-serif" font-size="14.00">lib/ansible/_internal/_yaml/_constructor.py</text>
+
+</g>
+</g>
+<!-- file&#45;11&#45;&gt;file&#45;1 -->
+<g id="edge7" class="edge">
+<title>file&#45;11&#45;&gt;file&#45;1</title>
+<path fill="none" stroke="black" d="M877.48,-36.02C888.25,-38.62 898.86,-41.6 909,-45 944.44,-56.89 951.32,-65.15 983,-85 1004.49,-98.46 1027.62,-115.06 1045.61,-128.49"/>
+<polygon fill="black" stroke="black" points="1043.91,-131.59 1054,-134.8 1048.11,-126 1043.91,-131.59"/>
+<text text-anchor="middle" x="955" y="-88.8" font-family="Times,serif" font-size="14.00">imports</text>
+</g>
+</g>
+</svg>
