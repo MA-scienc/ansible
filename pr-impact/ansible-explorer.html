@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pull request impact explorer</title>
+<style>
+:root{--ink:#18253b;--muted:#526178;--paper:#f1f4f8;--rule:#d8e0eb;--accent:#15545e;--selected:#e4f3f2;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 "Instrument Sans",system-ui,sans-serif}
+header{background:#16283a;color:#fff;padding:26px max(20px,calc((100% - 1300px)/2))}h1,h2,h3,p{margin:0}h1{font-size:clamp(25px,5vw,38px);letter-spacing:-.04em}h2{font-size:19px}h3{font-size:14px;margin:12px 0 6px}header p{color:#bfd0df}code,pre,.path{font-family:var(--mono)}.path{overflow-wrap:anywhere;font-size:12px}
+main{max-width:1340px;margin:auto;padding:20px;display:grid;grid-template-columns:minmax(190px,1fr) minmax(260px,1.55fr) minmax(240px,1.45fr);gap:14px;align-items:start}.panel{min-width:0;background:white;border:1px solid var(--rule);border-radius:12px;padding:15px}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer;text-align:left;background:#fff;border:1px solid var(--rule);border-radius:8px;padding:8px 10px;overflow-wrap:anywhere}button:hover{border-color:var(--accent)}button[aria-current=true]{background:var(--selected);border-color:var(--accent)}:focus-visible{outline:3px solid #257d8a;outline-offset:2px}
+.list{display:grid;gap:6px}.list button{width:100%}.stack{max-height:390px;overflow:auto;padding:3px}.package-name{font-weight:700;display:block}.muted,small{color:var(--muted)}.meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}input{width:100%;margin:8px 0;padding:8px 10px;border:1px solid var(--rule);border-radius:7px}select{max-width:100%}.row{margin-top:10px}.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:10px;background:#e7effb;color:#244d7b}.tag.M,.tag.T{background:#ffedc7;color:#6a4300}.tag.A{background:#d9f3e5;color:#205c40}.tag.D{background:#fbe0e0;color:#8a3033}
+pre{overflow:auto;max-height:510px;background:#f5f7fa;padding:10px;border-radius:8px;font-size:12px;tab-size:4}.diff-line{display:block}.add{background:#e0f3e7}.del{background:#fbe1e1}.hunk{color:#245a91}.edge{display:block;border-left:3px solid #5f969b;padding:6px 9px;margin-bottom:6px;background:#f2f7f8}.edge.removed{border-left-style:dashed}.edge button{margin-top:4px}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:980px){main{grid-template-columns:minmax(180px,1fr) minmax(240px,2fr)}#inspector{grid-column:2}}
+@media(max-width:640px){main{grid-template-columns:minmax(0,1fr);padding:12px}#inspector{grid-column:auto}.stack{max-height:245px}}
+</style>
+<header><h1>Pull request impact explorer</h1><p id="summary"></p><p><code id="revisions"></code></p></header>
+<main>
+<section class="panel" aria-labelledby="packages-title"><h2 id="packages-title">Packages</h2><label class="sr" for="search">Find a file or package</label><input id="search" type="search" placeholder="Find a file or package"><div id="packages" class="list stack"></div></section>
+<section class="panel" id="workspace" aria-label="Package and dependency view"></section>
+<section class="panel" id="inspector" aria-label="Diff and evidence"></section>
+</main>
+<noscript>This report needs JavaScript to display the package map.</noscript>
+<script type="application/json" id="report">{"files": [{"path": "changelogs/fragments/ansible-controller-python-version-check.yml", "group": "changelogs/fragments", "status": "A", "diff": "diff --git a/changelogs/fragments/ansible-controller-python-version-check.yml b/changelogs/fragments/ansible-controller-python-version-check.yml\nnew file mode 100644\nindex 0000000..08465c0\n--- /dev/null\n+++ b/changelogs/fragments/ansible-controller-python-version-check.yml\n@@ -0,0 +1,3 @@\n+minor_changes:\n+  - CLI - Removed the minimum Python version check.\n+  - ansible - Added a minimum and maximum Python version check which can be bypassed with an environment variable.\n"}, {"path": "lib/ansible/__init__.py", "group": "lib/ansible", "status": "M", "diff": "diff --git a/lib/ansible/__init__.py b/lib/ansible/__init__.py\nindex 2ded391..0011414 100644\n--- a/lib/ansible/__init__.py\n+++ b/lib/ansible/__init__.py\n@@ -15,15 +15,34 @@\n # You should have received a copy of the GNU General Public License\n # along with Ansible.  If not, see \u003chttp://www.gnu.org/licenses/>.\n \n-from __future__ import annotations\n+# The __future__ import statement has been intentionally omitted here\n+# to increase the range of Python versions which can execute the version check below.\n+\n+import os as _os\n+import sys as _sys\n+\n+_MIN_PYTHON_VERSION = (3, 13)\n+_MAX_PYTHON_VERSION = (3, 15)\n+_SYS_PYTHON_VERSION = _sys.version_info[:2]\n+\n+if _SYS_PYTHON_VERSION \u003c _MIN_PYTHON_VERSION or _SYS_PYTHON_VERSION > _MAX_PYTHON_VERSION:\n+    _BYPASS_KEY = 'ANSIBLE_ALLOW_UNSUPPORTED_PYTHON'\n+\n+    if not _os.environ.get(_BYPASS_KEY):\n+        _min_python_str = '.'.join(map(str, _MIN_PYTHON_VERSION))\n+        _max_python_str = '.'.join(map(str, _MAX_PYTHON_VERSION))\n+        _sys_python_str = '.'.join(map(str, _SYS_PYTHON_VERSION))\n+\n+        raise SystemExit(\n+            \"ERROR: \"\n+            f\"Ansible requires Python {_min_python_str} - {_max_python_str} on the controller, \"\n+            f\"but {_sys_python_str} is currently in use. \"\n+            f\"Set the {_BYPASS_KEY!r} environment variable to bypass this check at your own risk.\"\n+        )\n \n # make vendored top-level modules accessible EARLY\n import ansible._vendor\n \n-# Note: Do not add any code to this file.  The ansible module may be\n-# a namespace package when using Ansible-2.1+ Anything in this file may not be\n-# available if one of the other packages in the namespace is loaded first.\n-#\n # This is for backwards compat.  Code should be ported to get these from\n # ansible.release instead of from here.\n from ansible.release import __version__, __author__\n"}, {"path": "lib/ansible/cli/__init__.py", "group": "lib/ansible/cli", "status": "M", "diff": "diff --git a/lib/ansible/cli/__init__.py b/lib/ansible/cli/__init__.py\nindex 9bfa07f..f67118d 100644\n--- a/lib/ansible/cli/__init__.py\n+++ b/lib/ansible/cli/__init__.py\n@@ -21,17 +21,6 @@ if 1 \u003c= len(sys.argv) \u003c= 2 and os.path.basename(sys.argv[0]) == \"ansible\" and os\n     _ssh_askpass.main()\n \n \n-# Used for determining if the system is running a new enough python version\n-# and should only restrict on our documented minimum versions\n-_PY_MIN = (3, 13)\n-\n-if sys.version_info \u003c _PY_MIN:\n-    raise SystemExit(\n-        f\"ERROR: Ansible requires Python {'.'.join(map(str, _PY_MIN))} or newer on the controller. \"\n-        f\"Current version: {''.join(sys.version.splitlines())}\"\n-    )\n-\n-\n def check_blocking_io():\n     \"\"\"Check stdin/stdout/stderr to make sure they are using blocking IO.\"\"\"\n     handles = []\n"}, {"path": "test/sanity/ignore.txt", "group": "test/sanity", "status": "M", "diff": "diff --git a/test/sanity/ignore.txt b/test/sanity/ignore.txt\nindex 36603be..06e5f47 100644\n--- a/test/sanity/ignore.txt\n+++ b/test/sanity/ignore.txt\n@@ -1,5 +1,6 @@\n .github/RELEASE_NAMES.txt release-names  # Current codename 'TBD' not present in the file\n README.md pymarkdown:line-length\n+lib/ansible/__init__.py boilerplate  # avoid boilerplate to increase range of Python versions which can execute the version check\n lib/ansible/_internal/_errors/_task_timeout.py pylint:ansible-deprecated-version  # Deprecated version '2.23' found in call to 'ansible.module_utils.datatag.deprecate_value'\n lib/ansible/_internal/_task.py pylint:ansible-deprecated-version-comment  # Deprecated core version ('2.23') found: enable the deprecation message for collection_name\n lib/ansible/_internal/_templating/_datatag.py pylint:ansible-deprecated-version-comment  # Deprecated core version ('2.23') found: embedded Jinja constant string template support\n"}, {"path": "lib/ansible/_internal/__init__.py", "group": "lib/ansible/_internal", "status": "", "diff": ""}, {"path": "lib/ansible/_internal/_secret_input.py", "group": "lib/ansible/_internal", "status": "", "diff": ""}, {"path": "lib/ansible/_internal/_ssh/__init__.py", "group": "lib/ansible/_internal", "status": "", "diff": ""}, {"path": "lib/ansible/_internal/_ssh/_agent_launch.py", "group": "lib/ansible/_internal", "status": "", "diff": ""}, {"path": "lib/ansible/_internal/_task.py", "group": "lib/ansible/_internal", "status": "", "diff": ""}, {"path": "lib/ansible/_internal/_templating/_jinja_plugins.py", "group": "lib/ansible/_internal", "status": "", "diff": ""}, {"path": "lib/ansible/_internal/_templating/_template_vars.py", "group": "lib/ansible/_internal", "status": "", "diff": ""}, {"path": "lib/ansible/_internal/_yaml/_constructor.py", "group": "lib/ansible/_internal", "status": "", "diff": ""}, {"path": "lib/ansible/_vendor/__init__.py", "group": "lib/ansible/_vendor", "status": "", "diff": ""}, {"path": "lib/ansible/cli/_ssh_askpass.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/adhoc.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/arguments/__init__.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/arguments/option_helpers.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/config.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/console.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/doc.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/galaxy.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/inventory.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/playbook.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/pull.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/scripts/ansible_connection_cli_stub.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/cli/vault.py", "group": "lib/ansible/cli", "status": "", "diff": ""}, {"path": "lib/ansible/config/manager.py", "group": "lib/ansible/config", "status": "", "diff": ""}, {"path": "lib/ansible/constants.py", "group": "lib/ansible", "status": "", "diff": ""}, {"path": "lib/ansible/context.py", "group": "lib/ansible", "status": "", "diff": ""}, {"path": "lib/ansible/errors/__init__.py", "group": "lib/ansible/errors", "status": "", "diff": ""}, {"path": "lib/ansible/executor/interpreter_discovery.py", "group": "lib/ansible/executor", "status": "", "diff": ""}, {"path": "lib/ansible/executor/module_common.py", "group": "lib/ansible/executor", "status": "", "diff": ""}, {"path": "lib/ansible/executor/play_iterator.py", "group": "lib/ansible/executor", "status": "", "diff": ""}, {"path": "lib/ansible/executor/playbook_executor.py", "group": "lib/ansible/executor", "status": "", "diff": ""}, {"path": "lib/ansible/executor/powershell/module_manifest.py", "group": "lib/ansible/executor", "status": "", "diff": ""}, {"path": "lib/ansible/executor/process/worker.py", "group": "lib/ansible/executor", "status": "", "diff": ""}, {"path": "lib/ansible/executor/task_executor.py", "group": "lib/ansible/executor", "status": "", "diff": ""}, {"path": "lib/ansible/executor/task_queue_manager.py", "group": "lib/ansible/executor", "status": "", "diff": ""}, {"path": "lib/ansible/galaxy/__init__.py", "group": "lib/ansible/galaxy", "status": "", "diff": ""}, {"path": "lib/ansible/galaxy/api.py", "group": "lib/ansible/galaxy", "status": "", "diff": ""}, {"path": "lib/ansible/galaxy/collection/concrete_artifact_manager.py", "group": "lib/ansible/galaxy", "status": "", "diff": ""}, {"path": "lib/ansible/galaxy/dependency_resolution/dataclasses.py", "group": "lib/ansible/galaxy", "status": "", "diff": ""}, {"path": "lib/ansible/galaxy/role.py", "group": "lib/ansible/galaxy", "status": "", "diff": ""}, {"path": "lib/ansible/galaxy/token.py", "group": "lib/ansible/galaxy", "status": "", "diff": ""}, {"path": "lib/ansible/inventory/data.py", "group": "lib/ansible/inventory", "status": "", "diff": ""}, {"path": "lib/ansible/inventory/group.py", "group": "lib/ansible/inventory", "status": "", "diff": ""}, {"path": "lib/ansible/inventory/manager.py", "group": "lib/ansible/inventory", "status": "", "diff": ""}, {"path": "lib/ansible/module_utils/_internal/__init__.py", "group": "lib/ansible/module_utils", "status": "", "diff": ""}, {"path": "lib/ansible/module_utils/_internal/_collection_loader/_collection_finder.py", "group": "lib/ansible/module_utils", "status": "", "diff": ""}, {"path": "lib/ansible/module_utils/_internal/_deprecator.py", "group": "lib/ansible/module_utils", "status": "", "diff": ""}, {"path": "lib/ansible/module_utils/_internal/_traceback.py", "group": "lib/ansible/module_utils", "status": "", "diff": ""}, {"path": "lib/ansible/module_utils/common/collections.py", "group": "lib/ansible/module_utils", "status": "", "diff": ""}, {"path": "lib/ansible/module_utils/common/file.py", "group": "lib/ansible/module_utils", "status": "", "diff": ""}, {"path": "lib/ansible/module_utils/common/text/converters.py", "group": "lib/ansible/module_utils", "status": "", "diff": ""}, {"path": "lib/ansible/module_utils/secrets.py", "group": "lib/ansible/module_utils", "status": "", "diff": ""}, {"path": "lib/ansible/parsing/dataloader.py", "group": "lib/ansible/parsing", "status": "", "diff": ""}, {"path": "lib/ansible/parsing/plugin_docs.py", "group": "lib/ansible/parsing", "status": "", "diff": ""}, {"path": "lib/ansible/parsing/vault/__init__.py", "group": "lib/ansible/parsing", "status": "", "diff": ""}, {"path": "lib/ansible/playbook/__init__.py", "group": "lib/ansible/playbook", "status": "", "diff": ""}, {"path": "lib/ansible/playbook/base.py", "group": "lib/ansible/playbook", "status": "", "diff": ""}, {"path": "lib/ansible/playbook/helpers.py", "group": "lib/ansible/playbook", "status": "", "diff": ""}, {"path": "lib/ansible/playbook/included_file.py", "group": "lib/ansible/playbook", "status": "", "diff": ""}, {"path": "lib/ansible/playbook/play.py", "group": "lib/ansible/playbook", "status": "", "diff": ""}, {"path": "lib/ansible/playbook/play_context.py", "group": "lib/ansible/playbook", "status": "", "diff": ""}, {"path": "lib/ansible/playbook/playbook_include.py", "group": "lib/ansible/playbook", "status": "", "diff": ""}, {"path": "lib/ansible/playbook/role/__init__.py", "group": "lib/ansible/playbook", "status": "", "diff": ""}, {"path": "lib/ansible/playbook/role/definition.py", "group": "lib/ansible/playbook", "status": "", "diff": ""}, {"path": "lib/ansible/playbook/task.py", "group": "lib/ansible/playbook", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/__init__.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/action/__init__.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/action/assemble.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/action/copy.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/action/gather_facts.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/action/normal.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/action/template.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/cache/__init__.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/callback/__init__.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/callback/default.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/callback/junit.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/callback/minimal.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/callback/oneline.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/connection/__init__.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/connection/psrp.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/connection/ssh.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/connection/winrm.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/filter/encryption.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/inventory/__init__.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/inventory/constructed.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/inventory/generator.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/list.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/loader.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/lookup/__init__.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/lookup/config.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/lookup/first_found.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/strategy/__init__.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/strategy/free.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/strategy/linear.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/plugins/test/core.py", "group": "lib/ansible/plugins", "status": "", "diff": ""}, {"path": "lib/ansible/release.py", "group": "lib/ansible", "status": "", "diff": ""}, {"path": "lib/ansible/template/__init__.py", "group": "lib/ansible/template", "status": "", "diff": ""}, {"path": "lib/ansible/utils/__init__.py", "group": "lib/ansible/utils", "status": "", "diff": ""}, {"path": "lib/ansible/utils/collection_loader.py", "group": "lib/ansible/utils", "status": "", "diff": ""}, {"path": "lib/ansible/utils/color.py", "group": "lib/ansible/utils", "status": "", "diff": ""}, {"path": "lib/ansible/utils/display.py", "group": "lib/ansible/utils", "status": "", "diff": ""}, {"path": "lib/ansible/utils/encrypt.py", "group": "lib/ansible/utils", "status": "", "diff": ""}, {"path": "lib/ansible/utils/galaxy.py", "group": "lib/ansible/utils", "status": "", "diff": ""}, {"path": "lib/ansible/utils/path.py", "group": "lib/ansible/utils", "status": "", "diff": ""}, {"path": "lib/ansible/utils/plugin_docs.py", "group": "lib/ansible/utils", "status": "", "diff": ""}, {"path": "lib/ansible/utils/vars.py", "group": "lib/ansible/utils", "status": "", "diff": ""}, {"path": "lib/ansible/vars/clean.py", "group": "lib/ansible/vars", "status": "", "diff": ""}, {"path": "lib/ansible/vars/manager.py", "group": "lib/ansible/vars", "status": "", "diff": ""}, {"path": "lib/ansible/vars/plugins.py", "group": "lib/ansible/vars", "status": "", "diff": ""}], "edges": [[1, 12, 44, "imports", "head", "import ansible._vendor"], [1, 98, 48, "imports", "head", "from ansible.release import __version__, __author__"], [7, 1, 7, "imports", "head", "from ansible import constants as C"], [7, 2, 10, "imports", "head", "from ansible.cli import display"], [8, 1, 443, "imports", "head", "from ansible import constants"], [9, 1, 209, "imports", "head", "from ansible import template as _template"], [10, 1, 8, "imports", "head", "from ansible import constants as _constants"], [11, 1, 11, "imports", "head", "from ansible import constants as C"], [2, 1, 75, "imports", "head", "from ansible import _internal  # do not remove or defer; ensures controller-specific state is set early"], [2, 1, 82, "imports", "head", "from ansible import constants as C"], [2, 1, 95, "imports", "head", "from ansible import context"], [2, 4, 75, "imports", "head", "from ansible import _internal  # do not remove or defer; ensures controller-specific state is set early"], [2, 5, 112, "imports", "head", "from ansible._internal._secret_input import load_secret_input_files"], [2, 6, 113, "imports", "head", "from ansible._internal._ssh import _agent_launch"], [2, 7, 113, "imports", "head", "from ansible._internal._ssh import _agent_launch"], [2, 13, 20, "imports", "head", "from ansible.cli import _ssh_askpass"], [2, 15, 97, "imports", "head", "from ansible.cli.arguments import option_helpers as opt_help"], [2, 16, 97, "imports", "head", "from ansible.cli.arguments import option_helpers as opt_help"], [2, 27, 82, "imports", "head", "from ansible import constants as C"], [2, 28, 95, "imports", "head", "from ansible import context"], [2, 29, 79, "imports", "head", "from ansible.errors import AnsibleError, ExitCode"], [2, 46, 98, "imports", "head", "from ansible.inventory.manager import InventoryManager"], [2, 47, 111, "imports", "head", "from ansible.module_utils._internal import _deprecator"], [2, 47, 676, "imports", "head", "from ansible.module_utils._internal import _traceback"], [2, 48, 108, "imports", "head", "from ansible.module_utils._internal._collection_loader._collection_finder import _get_collection_name_from_path"], [2, 49, 111, "imports", "head", "from ansible.module_utils._internal import _deprecator"], [2, 50, 676, "imports", "head", "from ansible.module_utils._internal import _traceback"], [2, 51, 100, "imports", "head", "from ansible.module_utils.common.collections import is_sequence"], [2, 52, 101, "imports", "head", "from ansible.module_utils.common.file import is_executable"], [2, 53, 99, "imports", "head", "from ansible.module_utils.common.text.converters import to_bytes, to_text"], [2, 54, 102, "imports", "head", "from ansible.module_utils.secrets import register_secret"], [2, 55, 103, "imports", "head", "from ansible.parsing.dataloader import DataLoader"], [2, 57, 104, "imports", "head", "from ansible.parsing.vault import PromptVaultSecret, get_file_vault_secret, VaultSecretsContext"], [2, 90, 105, "imports", "head", "from ansible.plugins.loader import add_all_plugin_dirs, init_plugin_loader"], [2, 98, 106, "imports", "head", "from ansible.release import __version__"], [2, 100, 96, "imports", "head", "from ansible.utils import display as _display"], [2, 101, 107, "imports", "head", "from ansible.utils.collection_loader import AnsibleCollectionConfig"], [2, 103, 83, "imports", "head", "from ansible.utils.display import Display"], [2, 103, 96, "imports", "head", "from ansible.utils import display as _display"], [2, 106, 109, "imports", "head", "from ansible.utils.path import unfrackpath"], [2, 110, 110, "imports", "head", "from ansible.vars.manager import VariableManager"], [14, 1, 13, "imports", "head", "from ansible import constants as C"], [14, 1, 14, "imports", "head", "from ansible import context"], [14, 2, 12, "imports", "head", "from ansible.cli import CLI"], [16, 1, 19, "imports", "head", "import ansible"], [16, 1, 20, "imports", "head", "from ansible import constants as C"], [17, 1, 18, "imports", "head", "from ansible import context"], [17, 1, 21, "imports", "head", "from ansible import constants as C"], [17, 2, 9, "imports", "head", "from ansible.cli import CLI"], [18, 1, 20, "imports", "head", "from ansible import constants as C"], [18, 1, 21, "imports", "head", "from ansible import context"], [18, 2, 11, "imports", "head", "from ansible.cli import CLI"], [19, 1, 27, "imports", "head", "from ansible import constants as C"], [19, 1, 28, "imports", "head", "from ansible import context"], [19, 2, 10, "imports", "head", "from ansible.cli import CLI"], [20, 1, 28, "imports", "head", "from ansible import context"], [20, 2, 10, "imports", "head", "from ansible.cli import CLI"], [21, 1, 18, "imports", "head", "from ansible import constants as C"], [21, 1, 19, "imports", "head", "from ansible import context"], [21, 2, 10, "imports", "head", "from ansible.cli import CLI"], [22, 1, 15, "imports", "head", "from ansible import constants as C"], [22, 1, 16, "imports", "head", "from ansible import context"], [22, 2, 10, "imports", "head", "from ansible.cli import CLI"], [23, 1, 23, "imports", "head", "from ansible import constants as C"], [23, 1, 24, "imports", "head", "from ansible import context"], [23, 2, 10, "imports", "head", "from ansible.cli import CLI"], [24, 1, 19, "imports", "head", "from ansible import constants as C"], [25, 1, 15, "imports", "head", "from ansible import constants as C"], [25, 1, 16, "imports", "head", "from ansible import context"], [25, 2, 10, "imports", "head", "from ansible.cli import CLI"], [26, 1, 667, "imports", "head", "from ansible import context"], [30, 1, 8, "imports", "head", "from ansible import constants as C"], [31, 1, 53, "imports", "head", "from ansible import constants as C"], [31, 1, 69, "imports", "head", "from ansible import template as _template"], [32, 1, 24, "imports", "head", "from ansible import constants as C"], [33, 1, 22, "imports", "head", "from ansible import constants as C"], [33, 1, 23, "imports", "head", "from ansible import context"], [34, 1, 20, "imports", "head", "from ansible import constants as C"], [35, 1, 33, "imports", "head", "from ansible import constants as C"], [36, 1, 17, "imports", "head", "from ansible import constants as C"], [36, 2, 19, "imports", "head", "from ansible.cli import scripts"], [37, 1, 33, "imports", "head", "from ansible import constants as C"], [37, 1, 34, "imports", "head", "from ansible import context"], [38, 1, 28, "imports", "head", "from ansible import context"], [39, 1, 23, "imports", "head", "from ansible import constants as C"], [40, 1, 32, "imports", "head", "from ansible import context"], [41, 1, 29, "imports", "head", "from ansible import constants as C"], [42, 1, 33, "imports", "head", "from ansible import context"], [43, 1, 31, "imports", "head", "from ansible import constants as C"], [44, 1, 24, "imports", "head", "from ansible import constants as C"], [45, 1, 12, "imports", "head", "from ansible import constants as C"], [46, 1, 31, "imports", "head", "from ansible import constants as C"], [55, 1, 15, "imports", "head", "from ansible import constants as C"], [56, 1, 10, "imports", "head", "from ansible import constants as C"], [57, 1, 62, "imports", "head", "from ansible import constants as C"], [58, 1, 22, "imports", "head", "from ansible import constants as C"], [59, 1, 17, "imports", "head", "from ansible import constants as C"], [59, 1, 18, "imports", "head", "from ansible import context"], [60, 1, 22, "imports", "head", "from ansible import constants as C"], [61, 1, 22, "imports", "head", "from ansible import constants as C"], [62, 1, 23, "imports", "head", "from ansible import constants as C"], [62, 1, 24, "imports", "head", "from ansible import context"], [63, 1, 22, "imports", "head", "from ansible import constants as C"], [63, 1, 23, "imports", "head", "from ansible import context"], [64, 1, 31, "imports", "head", "from ansible import constants as C"], [65, 1, 27, "imports", "head", "from ansible import constants as C"], [66, 1, 22, "imports", "head", "from ansible import constants as C"], [67, 1, 22, "imports", "head", "from ansible import constants as C"], [68, 1, 27, "imports", "head", "from ansible import constants as C"], [69, 1, 22, "imports", "head", "from ansible import constants as C"], [69, 1, 36, "imports", "head", "from ansible import _internal"], [70, 1, 27, "imports", "head", "from ansible import constants as C"], [71, 1, 28, "imports", "head", "from ansible import constants as C"], [72, 1, 10, "imports", "head", "from ansible import constants as C"], [73, 1, 19, "imports", "head", "from ansible import constants as C"], [74, 1, 21, "imports", "head", "from ansible import constants as C"], [75, 1, 30, "imports", "head", "from ansible import constants as C"], [76, 1, 34, "imports", "head", "from ansible import constants as C"], [77, 1, 23, "imports", "head", "from ansible import constants as C"], [77, 1, 24, "imports", "head", "from ansible import context"], [78, 1, 91, "imports", "head", "from ansible import constants"], [79, 1, 20, "imports", "head", "from ansible import constants as C"], [80, 1, 20, "imports", "head", "from ansible import constants as C"], [81, 1, 16, "imports", "head", "from ansible import constants as C"], [82, 1, 335, "imports", "head", "from ansible import constants as C"], [83, 1, 442, "imports", "head", "from ansible import constants as C"], [84, 1, 357, "imports", "head", "from ansible import constants as C"], [85, 1, 11, "imports", "head", "from ansible import template as _template"], [86, 1, 28, "imports", "head", "from ansible import template as _template"], [87, 1, 84, "imports", "head", "from ansible import constants as C"], [88, 1, 91, "imports", "head", "from ansible import constants as C"], [89, 1, 10, "imports", "head", "from ansible import context"], [89, 1, 11, "imports", "head", "from ansible import constants as C"], [90, 1, 25, "imports", "head", "from ansible import __version__ as ansible_version"], [90, 1, 26, "imports", "head", "from ansible import _internal, constants as C"], [91, 1, 30, "imports", "head", "from ansible import template as _template"], [92, 1, 88, "imports", "head", "from ansible import constants as C"], [93, 1, 153, "imports", "head", "from ansible import template as _template"], [94, 1, 33, "imports", "head", "from ansible import constants as C, constants"], [94, 1, 34, "imports", "head", "from ansible import context"], [95, 1, 34, "imports", "head", "from ansible import constants as C"], [96, 1, 32, "imports", "head", "from ansible import constants as C"], [97, 1, 30, "imports", "head", "from ansible import errors"], [99, 1, 10, "imports", "head", "from ansible import _internal"], [99, 1, 11, "imports", "head", "from ansible import errors as _errors"], [102, 1, 22, "imports", "head", "from ansible import constants as C"], [103, 1, 52, "imports", "head", "from ansible import constants as C"], [104, 1, 12, "imports", "head", "from ansible import constants as C"], [105, 1, 26, "imports", "head", "from ansible import context"], [107, 1, 11, "imports", "head", "from ansible import constants as C"], [108, 1, 28, "imports", "head", "from ansible import constants as C"], [108, 1, 29, "imports", "head", "from ansible import context"], [109, 1, 11, "imports", "head", "from ansible import constants as C"], [110, 1, 26, "imports", "head", "from ansible import constants as C"], [111, 1, 10, "imports", "head", "from ansible import constants as C"]], "notes": [], "changed": 4, "base": "09838f3a1c60", "head": "2bf7ee566f75"}</script>
+<script>
+"use strict";
+const data = JSON.parse(document.querySelector("#report").textContent);
+const byId = id => document.getElementById(id);
+function el(tag, text, className) {
+  const node = document.createElement(tag);
+  if (text != null) node.textContent = text;
+  if (className) node.className = className;
+  return node;
+}
+function control(text, action, current = false) {
+  const button = el("button", text);
+  button.type = "button";
+  if (current) button.setAttribute("aria-current", "true");
+  button.addEventListener("click", action);
+  return button;
+}
+function section(parent, title) {
+  const target = el("div", null, "row");
+  target.append(el("h3", title));
+  parent.append(target);
+  return target;
+}
+function page(list, items, draw, batch = 12) {
+  let index = 0;
+  function append() {
+    const end = Math.min(index + batch, items.length);
+    for (; index < end; index++) list.append(draw(items[index]));
+    if (index < items.length) {
+      const more = control(`Show more (${items.length - index} remaining)`, () => {
+        const previous = more.previousElementSibling;
+        more.remove();
+        append();
+        previous?.nextElementSibling?.focus();
+      });
+      list.append(more);
+    }
+  }
+  append();
+}
+const packages = new Map();
+const links = new Map();
+const adjacent = data.files.map(() => ({incoming: [], outgoing: []}));
+for (const [index, file] of data.files.entries()) {
+  if (!packages.has(file.group)) packages.set(file.group, []);
+  packages.get(file.group).push(index);
+}
+for (const [index, edge] of data.edges.entries()) {
+  const [source, target] = edge;
+  adjacent[source].outgoing.push(index);
+  adjacent[target].incoming.push(index);
+  const from = data.files[source].group;
+  const to = data.files[target].group;
+  if (from === to) continue;
+  if (!links.has(from)) links.set(from, new Map());
+  const targets = links.get(from);
+  if (!targets.has(to)) targets.set(to, []);
+  targets.get(to).push(index);
+}
+const groups = [...packages.keys()];
+const countChanged = ids => ids.filter(i => data.files[i].status).length;
+groups.sort((a, b) => countChanged(packages.get(b)) - countChanged(packages.get(a)) || a.localeCompare(b));
+let group = groups[0];
+let selected;
+let direction = "both";
+byId("summary").textContent = `${data.changed} changed · ${data.files.length - data.changed} related · ${groups.length} packages`;
+byId("revisions").textContent = `${data.base} → ${data.head}`;
+const labels = {A:"Added", M:"Modified", D:"Deleted", T:"Type changed"};
+function fileButton(i) {
+  const file = data.files[i];
+  const button = control(null, () => openFile(i), i === selected);
+  button.append(el("span", file.path, "path"), document.createElement("br"),
+    el("span", labels[file.status] || (file.status ? "Changed" : "Related"), `tag ${file.status}`));
+  return button;
+}
+function openFile(i) {
+  selected = i;
+  group = data.files[i].group;
+  rebuild();
+  byId("file-title").focus();
+}
+function openGroup(name) {
+  group = name;
+  selected = undefined;
+  rebuild();
+  byId("group-title").focus();
+}
+function renderPackages() {
+  const list = byId("packages");
+  list.replaceChildren();
+  const term = byId("search").value.trim().toLowerCase();
+  if (term) {
+    const results = data.files.flatMap((file, i) =>
+      file.path.toLowerCase().includes(term) || file.group.toLowerCase().includes(term) ? [i] : []);
+    if (!results.length) list.append(el("p", "No matching files or packages.", "muted"));
+    page(list, results, fileButton);
+    return;
+  }
+  function packageButton(name) {
+    const ids = packages.get(name);
+    const changed = countChanged(ids);
+    const button = control(null, () => openGroup(name), name === group);
+    button.append(el("span", name, "package-name"), el("small", `${changed} changed · ${ids.length - changed} related`));
+    return button;
+  }
+  const changedGroups = groups.filter(name => countChanged(packages.get(name)));
+  const relatedGroups = groups.filter(name => !countChanged(packages.get(name)));
+  page(list, changedGroups, packageButton);
+  if (relatedGroups.length) {
+    const details = el("details");
+    details.append(el("summary", `Related packages (${relatedGroups.length})`));
+    const items = el("div", null, "list row");
+    details.append(items);
+    details.open = relatedGroups.includes(group);
+    details.addEventListener("toggle", () => {
+      if (details.open && !items.childElementCount) page(items, relatedGroups, packageButton);
+    });
+    list.append(details);
+  }
+}
+function showEvidence(indices) {
+  const evidence = byId("evidence");
+  evidence.replaceChildren(el("h3", "Relationship evidence"));
+  const list = el("div", null, "list");
+  page(list, indices, i => {
+    const [source, target, line, kind, revision, excerpt] = data.edges[i];
+    const row = el("div", null, `edge ${revision === "base only" ? "removed" : ""}`);
+    row.append(el("div", `${data.files[source].path}:${line}`, "path"),
+      el("div", `${kind} → ${data.files[target].path}`, "path"),
+      el("small", revision === "base only" ? "Base revision only" : "Head revision"));
+    if (excerpt) row.append(el("div", excerpt, "path"));
+    return row;
+  });
+  evidence.append(list);
+  evidence.focus();
+}
+function renderWorkspace() {
+  const view = byId("workspace");
+  view.replaceChildren();
+  const title = el("h2", group || "No changed files");
+  title.id = "group-title";
+  title.tabIndex = -1;
+  view.append(title);
+  if (!group) return;
+  const ids = packages.get(group);
+  const changed = ids.filter(i => data.files[i].status);
+  const related = ids.filter(i => !data.files[i].status);
+  const fileList = section(view, "Changed files");
+  const list = el("div", null, "list");
+  fileList.append(list);
+  if (!changed.length) list.append(el("p", "This package contains related files.", "muted"));
+  page(list, changed, fileButton);
+  if (related.length) {
+    const disclosure = el("details", null, "row");
+    disclosure.append(el("summary", `Related files (${related.length})`));
+    const relatedList = el("div", null, "list row");
+    disclosure.append(relatedList);
+    disclosure.addEventListener("toggle", () => {
+      if (disclosure.open && !relatedList.childElementCount) page(relatedList, related, fileButton);
+    });
+    if (related.includes(selected)) disclosure.open = true;
+    view.append(disclosure);
+  }
+  if (selected === undefined) {
+    const connections = [];
+    for (const [from, targets] of links) {
+      for (const [to, edges] of targets) if (from === group || to === group) connections.push([from, to, edges]);
+    }
+    connections.sort((a, b) => b[2].length - a[2].length);
+    if (connections.length) {
+      const lane = el("div", null, "list");
+      section(view, "Package connections").append(lane);
+      page(lane, connections, ([from, to, edges]) => control(
+        `${from} → ${to} · ${edges.length} references`, () => showEvidence(edges)));
+    }
+    return;
+  }
+  const heading = section(view, "Direct file connections");
+  const select = el("select");
+  select.setAttribute("aria-label", "Connection direction");
+  for (const [value, text] of [["both","Both directions"],["incoming","Dependents"],["outgoing","Dependencies"]]) {
+    const option = el("option", text);
+    option.value = value;
+    select.append(option);
+  }
+  select.value = direction;
+  const connectionLists = el("div");
+  function updateConnections() {
+    direction = select.value;
+    connectionLists.replaceChildren();
+    for (const [key, label, other] of [["incoming","Dependents → selected file",0],["outgoing","Selected file → dependencies",1]]) {
+      if (direction !== "both" && direction !== key) continue;
+      const neighbors = new Map();
+      for (const index of adjacent[selected][key]) {
+        const file = data.edges[index][other];
+        if (!neighbors.has(file)) neighbors.set(file, []);
+        neighbors.get(file).push(index);
+      }
+      const lane = el("div", null, "list");
+      section(connectionLists, `${label} (${neighbors.size})`).append(lane);
+      if (!neighbors.size) lane.append(el("p", "No matching references.", "muted"));
+      page(lane, [...neighbors], ([file, edges]) => {
+        const row = el("div", null, "edge");
+        row.append(fileButton(file), control(`Show evidence · ${edges.length}`, () => showEvidence(edges)));
+        return row;
+      });
+    }
+  }
+  heading.append(select, connectionLists);
+  select.addEventListener("change", updateConnections);
+  updateConnections();
+}
+function renderInspector() {
+  const view = byId("inspector");
+  view.replaceChildren();
+  const title = el("h2", "Diff and evidence");
+  title.id = "file-title";
+  title.tabIndex = -1;
+  view.append(title);
+  const evidence = el("div");
+  evidence.id = "evidence";
+  evidence.tabIndex = -1;
+  view.append(evidence);
+  if (selected === undefined) {
+    view.append(el("p", "Select a file or a package connection to inspect it.", "muted"));
+  } else {
+    const file = data.files[selected];
+    view.append(el("p", file.path, "path"));
+    if (file.diff) {
+      const pre = el("pre");
+      const code = el("code");
+      const fragment = document.createDocumentFragment();
+      for (const line of file.diff.split("\n")) {
+        const cls = line.startsWith("@@") ? "hunk" : line.startsWith("+") && !line.startsWith("+++") ? "add" :
+          line.startsWith("-") && !line.startsWith("---") ? "del" : "";
+        fragment.append(el("span", line || " ", `diff-line ${cls}`));
+      }
+      code.append(fragment);
+      pre.append(code);
+      view.append(pre);
+    } else view.append(el("p", "No diff for this file.", "muted"));
+  }
+  if (data.notes.length) {
+    const details = el("details", null, "row");
+    details.append(el("summary", `Analysis diagnostics (${data.notes.length})`));
+    for (const [path, line, reason] of data.notes) details.append(el("p", `${path}:${line} · ${reason}`, "path"));
+    view.append(details);
+  }
+}
+function rebuild() { renderPackages(); renderWorkspace(); renderInspector(); }
+byId("search").addEventListener("input", renderPackages);
+rebuild();
+</script>
+</html>
